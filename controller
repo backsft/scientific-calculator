@@ -1,0 +1,139 @@
+package com.example.demo21;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import java.util.ArrayList;
+import org.apache.commons.lang3.StringUtils;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
+class Operators_method {
+
+    private static final Pattern EXPR_RE = Pattern.compile("\\G\\s*([+-]?)\\s*([^+-]+)"),
+            TERM_RE = Pattern.compile("\\G(^|(?<!^)\\*|(?<!^)/)\\s*(\\d*\\.?\\d+)\\s*");
+
+    public  static double calculate(String expr) {
+        Matcher m = EXPR_RE.matcher(expr);
+        double sum = 0;
+        int matchEnd;
+        for (matchEnd = -1; m.find(); matchEnd = m.end()) {
+            sum += (("-".equals(m.group(1))) ? -1 : +1) * evalTerm(m.group(2));
+        }
+        if (matchEnd != expr.length()) {
+            throw new IllegalArgumentException("Invalid expression \"" + expr + "\"");
+        }
+        return sum;
+    }
+
+    private static double evalTerm(String term) {
+        Matcher m = TERM_RE.matcher(term);
+        double product = Double.NaN;
+        int matchEnd;
+        for (matchEnd = -1; m.find(); matchEnd = m.end()) {
+            switch (m.group(1)) {
+                case "*": product *= Double.parseDouble(m.group(2)); break;
+                case "/": product /= Double.parseDouble(m.group(2)); break;
+                case "":  product  = Double.parseDouble(m.group(2)); break;
+            }
+        }
+        if (matchEnd != term.length()) {
+            throw new IllegalArgumentException("Invalid term \"" + term + "\"");
+        }
+        return product;
+    }
+
+}
+
+
+public   class HelloController {
+     ArrayList<String>data1=new ArrayList<>();
+
+     //String str="GOOGLE";
+    @FXML
+    private  Button clear;
+    @FXML
+    private  Button backspace;
+
+    @FXML
+    private  TextField display_main;
+    @FXML
+    private  Button equal;
+    @FXML
+    private  Button one;
+    @FXML
+    private  TextField display_optional;
+
+    @FXML
+    private  Button plus;
+    @FXML
+    private  Button two;
+    @FXML
+    private  Button three;
+    @FXML
+    private  void handleButtonAction(ActionEvent event) {
+        if (event.getSource() == one ) {
+            display_main.setText(display_main.getText()+ "1");
+            display_optional.setText(display_optional.getText() + "1");
+            data1.add(display_main.getText());
+            System.out.println(data1);
+
+        }
+        else if (event.getSource() == two) {
+            display_main.setText(display_main.getText() + "2");
+            display_optional.setText(display_optional.getText() + "2");
+            data1.add(display_main.getText());
+            System.out.println(data1);
+        }
+                //used as backspace here
+        else if (event.getSource() == three) {
+            display_main.setText(display_main.getText() + "");
+            display_optional.setText(display_optional.getText() + "");
+        }
+        else if (event.getSource() == plus) {
+            display_main.setText(display_main.getText() + "+");
+            display_optional.setText(display_optional.getText() + "+");
+        }
+        else if (event.getSource() == backspace)
+        {
+            int index = data1.size() - 1;
+            data1.remove(index);
+            System.out.println("Modified ArrayList : " + data1);
+            System.out.println("last value of the array list :"+data1.get(index-1));
+            display_main.setText(data1.get(index-1));
+            display_optional.setText(data1.get(index-1));
+        }
+
+        else if (event.getSource() == clear) {
+            display_main.setText("");
+            data1.clear();
+            display_main.setText("");
+            display_optional.setText("");
+        }
+        else if (event.getSource() == equal)
+        {
+            Operators_method obj=new Operators_method();
+            data1.add(String.valueOf(display_main.getText()));
+            //System.out.println(data1);
+            String a="";
+            for(String i:data1)
+            {
+                a=i;
+               // System.out.print(i);
+            }
+            String b=a;
+            System.out.println(" this is a "+a);
+            System.out.println(" this is b "+b);
+            Operators_method obj1=new Operators_method();
+            double m=obj1.calculate(b);
+            System.out.println(obj1.calculate(b));
+            System.out.println("this is the value of m "+m);
+            display_main.clear();
+            display_main.setText(String.valueOf(+m));
+            display_optional.setText(b+"=");
+
+
+        }
+
+    }
+}
